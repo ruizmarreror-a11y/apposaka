@@ -32,7 +32,15 @@ const DishModal = ({ dish, onClose, onAddToCart }) => {
 
         <div className="modal-header">
           <div className="modal-image-container">
-            <img src={dish.image} alt={dish.name} className="modal-image" />
+            <img 
+              src={dish.image} 
+              alt={dish.name} 
+              className="modal-image"
+              onError={(e) => {
+                // Si la imagen falla, usar una imagen de fallback
+                e.target.src = 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=500&h=500&fit=crop&q=90';
+              }}
+            />
             <div className="modal-number">{dish.number}</div>
           </div>
           <div className="modal-title-section">

@@ -7,12 +7,38 @@ import Cart from './Cart'
 import './MenuScreen.css'
 
 const MenuScreen = ({ orderData, onOrderComplete, onBack }) => {
-  const [selectedCategory, setSelectedCategory] = useState('entrantes')
+  const [selectedCategory, setSelectedCategory] = useState('ensaladas')
   const [selectedDish, setSelectedDish] = useState(null)
   const [cartItems, setCartItems] = useState([])
   const [showCart, setShowCart] = useState(false)
 
-  const filteredItems = menuItems.filter(item => item.category === selectedCategory)
+  // Filtrar por categoría y tipo de buffet
+  const filteredItems = menuItems.filter(item => {
+    const categoryMatch = item.category === selectedCategory
+    if (!categoryMatch) return false
+    
+    // Filtrar por tipo de buffet
+    const currentMenuType = orderData.menuType
+    if (!currentMenuType) return true
+    
+    // Si es buffet de día, solo mostrar platos de buffetDia
+    if (currentMenuType === 'buffetDia') {
+      return item.buffetType?.includes('buffetDia')
+    }
+    
+    // Si es buffet de noche, mostrar platos de buffetDia, buffetNoche y complementarios
+    if (currentMenuType === 'buffetNoche') {
+      return item.buffetType?.includes('buffetDia') || item.buffetType?.includes('buffetNoche') || item.buffetType?.includes('complementarios')
+    }
+    
+    // Si es buffet fin de semana, mostrar platos de buffetDia, buffetNoche y buffetFinSemana
+    if (currentMenuType === 'buffetFinSemana') {
+      return item.buffetType?.includes('buffetDia') || item.buffetType?.includes('buffetNoche') || item.buffetType?.includes('buffetFinSemana')
+    }
+    
+    // Para menú del día, mostrar todos
+    return true
+  })
   const menuTypeName = menuTypes[orderData.menuType]?.name || 'Menú'
 
   const handleAddToCart = (dish, quantity, customizations, comments) => {
